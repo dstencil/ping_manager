@@ -1,1 +1,4 @@
-
+ping3==4.0.4
+Flask==2.2.3
+Flask-Caching==2.0.2
+Flask-SQLAlchemy==3.0.3
