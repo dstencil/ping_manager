@@ -35,17 +35,21 @@
         <pre id="ping-results"></pre>
 
 <script>
-    // Add device form submit event
-    $('#add-device-form').submit(function(event) {
-        event.preventDefault();
-        var ip_address = $('#ip-address').val();
-        $.post('/add', {ip_address: ip_address}, function() {
-            location.reload();
-        }).fail(function(xhr) {
-            console.error(xhr.responseText);
-            alert('Failed to add device. Please try again.');
-        });
-    });
+	// Add device form submit event
+	$('#add-device-form').submit(function(event) {
+		event.preventDefault();
+		var ip_address = $('#ip-address').val();
+		$.post('/add', {ip_address: ip_address}, function() {
+			location.reload();
+		}).done(function(data) {
+			// If device is added successfully
+			alert(data);
+		}).fail(function(xhr) {
+			// If device is not pingable or other error occurs
+			console.error(xhr.responseText);
+			alert('Device is not alive or Duplicate IP Address. Try Again');
+		});
+	});
 
     // Ping device form submit event
     $('#ping-device-form').submit(function(event) {
