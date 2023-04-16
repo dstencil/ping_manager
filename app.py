@@ -58,17 +58,18 @@ def get_devices():
 
 @app.route('/add', methods=['POST'])
 def add_device():
-    ip_address = request.form['ip_address']
-    ping_result = ping(ip_address) # Ping the device
+    ip_addresses = request.form['ip_address'].split(',')
+    for ip_address in ip_addresses:
+        ping_result = ping(ip_address.strip())  # Strip any leading/trailing whitespace from IP address
 
-    if ping_result is not None and ping_result != False: # If the device is pingable
-        device = Device(ip_address=ip_address)
-        db.session.add(device)
-        db.session.commit()
-        return 'Device added successfully'
-    else: # If the device is not pingable
-        return 'Device is not alive or Duplicate IP Address. Try Again'
-
+        if ping_result is not None and ping_result != False:  # If the device is pingable
+            device = Device(ip_address=ip_address.strip())  # Pass user_name and user_password to Device constructor
+            db.session.add(device)
+            #db.session.commit()
+        else:  # If the device is not pingable
+            return f'Device with IP address {ip_address} is not alive or Duplicate IP Address. Try Again'
+    db.session.commit()
+    return 'Devices added successfully'
 @app.route('/ping', methods=['POST'])
 def ping_device():
     device_id = request.form['device']
