@@ -1,7 +1,7 @@
 # ping_manager
 Flask Web app with a SQLLite Database for pinging devices to check status
 
-
+-------------------
 ![ping_manager](https://user-images.githubusercontent.com/35854396/232341350-922f30e4-29af-4ff6-9d03-7f15b68e578b.png)
 
 ## To Do:
