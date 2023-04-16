@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Device Ping App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+</head>
+<body>
+    <div class="container">
+		<h1>Ping Manager</h1>
+        <h1>Add Device</h1>
+        <form id="add-device-form">
+            <div class="form-group">
+                <label for="ip-address">IP Address:</label>
+                <input type="text" class="form-control" id="ip-address" name="ip_address" placeholder="Enter IP Address">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Device</button>
+        </form>
+        <hr>
+        <h1>Ping Device</h1>
+        <form id="ping-device-form">
+            <div class="form-group">
+                <label for="device-select">Select Device:</label>
+                <select class="form-control" id="device-select" name="device">
+                    <!-- Dropdown options will be dynamically populated using JavaScript -->
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Ping Device</button>
+            <button type="button" class="btn btn-danger" id="delete-device-btn">Delete Device</button>
+        </form>
+        <hr>
+        <h1>Ping Results</h1>
+        <pre id="ping-results"></pre>
+
+<script>
+    // Add device form submit event
+    $('#add-device-form').submit(function(event) {
+        event.preventDefault();
+        var ip_address = $('#ip-address').val();
+        $.post('/add', {ip_address: ip_address}, function() {
+            location.reload();
+        }).fail(function(xhr) {
+            console.error(xhr.responseText);
+            alert('Failed to add device. Please try again.');
+        });
+    });
+
+    // Ping device form submit event
+    $('#ping-device-form').submit(function(event) {
+        event.preventDefault();
+        var device_id = $('#device-select').val();
+        $.post('/ping', {device: device_id}, function(data) {
+            $('#ping-results').text(data.result);
+        }).fail(function(xhr) {
+            console.error(xhr.responseText);
+            alert('Failed to ping device. Please try again.');
+        });
+    });
+
+    // Delete device form submit event
+    $('#delete-device-btn').click(function(event) {
+        event.preventDefault();
+        var device_id = $('#device-select').val();
+        $.post('/delete_device', {device_id: device_id}, function() {
+            location.reload();
+        }).fail(function(xhr) {
+            console.error(xhr.responseText);
+            alert('Failed to delete device. Please try again.');
+        });
+    });
+
+    // Load devices in the dropdown on page load
+    $(document).ready(function() {
+        $.get('/devices', function(data) {
+            var devices = data.devices;
+            var deviceSelect = $('#device-select');
+            deviceSelect.empty();
+            if (devices.length > 0) {
+                devices.forEach(function(device) {
+                    deviceSelect.append($('<option>').text(device.ip_address).attr('value', device.id));
+                });
+                $('#ping-device-form').show();
+                $('#delete-device-btn').show();
+            } else {
+                deviceSelect.append($('<option>').text('No devices found'));
+                $('#ping-device-form').hide();
+                $('#delete-device-btn').hide();
+            }
+        }).fail(function(xhr) {
+            console.error(xhr.responseText);
+            alert('Failed to load devices. Please try again.');
+        });
+    });
+</script>
+</body>
+</html>
